@@ -14,7 +14,7 @@ import { ApiKeyAuth } from '../auth/auth.decorator';
 import { ApiBearerAuth, ApiOperation, ApiParam } from '@nestjs/swagger';
 import { PaginationResult } from '../common/pagination';
 import { ResponseDto } from '../common/response.dto';
-import { ThingProps } from './entities/Thing.entity';
+import { ThingProps } from './entities/thing.entity';
 import { ListThingDto } from './dto/list-thing.dto';
 
 @Controller('things')

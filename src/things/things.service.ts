@@ -2,14 +2,14 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 
 import { IThingRepository } from './things.types';
 import { ITransactionManager } from '../common/transaction-manager';
-import { Thing } from './entities/Thing.entity';
+import { Thing } from './entities/thing.entity';
 import { IdType } from '../common/base.repository';
 import {
   DEFAULT_SORT_BY,
   DEFAULT_SORT_ORDER,
   PaginationResult,
 } from '../common/pagination';
-import { ListThingDto } from './dto/list-Thing.dto';
+import { ListThingDto } from './dto/list-thing.dto';
 import { UpsertThingDto } from './dto/upsert-thing.dto';
 
 @Injectable()
