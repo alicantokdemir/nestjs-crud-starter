@@ -58,3 +58,6 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # Sqlite db files
 *.sqlite
 *.sqlite3
+
+# sst
+.sst
