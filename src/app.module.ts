@@ -5,9 +5,10 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { ThingsModule } from './things/things.module';
+import { MetricsModule } from './metrics/metrics.module';
 
 @Module({
-  imports: [CommonModule, AuthModule, UsersModule, ThingsModule],
+  imports: [CommonModule, AuthModule, UsersModule, ThingsModule, MetricsModule],
   controllers: [AppController],
   providers: [AppService],
 })

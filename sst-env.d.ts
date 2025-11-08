@@ -5,6 +5,7 @@
 
 declare module "sst" {
   export interface Resource {
+    MyBucket: sst.aws.Bucket;
   }
 }
 /// <reference path="sst-env.d.ts" />
