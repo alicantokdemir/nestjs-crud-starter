@@ -4,11 +4,11 @@ Please refer to /docs for swagger documentation
 
 ### TODOs
 - [ ] Unit & e2e Tests
-- [ ] Logging
-- [ ] Monitoring
+- [x] Logging
+- [x] Monitoring
 - [ ] Semantic versioning
 - [ ] i18n
-- [ ] Containerization / Docker
+- [x] Containerization / Docker
 - [ ] Deployment script (sst, terraform, pulumi..)
 - [ ] Github workflows
 - [ ] Update README file
