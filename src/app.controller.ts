@@ -13,15 +13,23 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Post, Redirect, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { ApiKeyAuth } from './auth/auth.decorator';
+import { LoggerService } from './loggers/logger.service';
 
 const s3 = new S3Client({});
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly loggerService: LoggerService,
+  ) {
+    this.loggerService.setContext(AppController.name);
+  }
 
   @Get()
   getHello(): string {
+    this.loggerService.log('Hello endpoint called');
+
     return this.appService.getHello();
   }
 
@@ -36,7 +44,7 @@ export class AppController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<string> {
     const params = {
-      Bucket: Resource.MyBucket.name,
+      Bucket: (Resource as any).MyBucket.name,
       ContentType: file.mimetype,
       Key: file.originalname,
       Body: file.buffer,
@@ -64,7 +72,7 @@ export class AppController {
   async getLatestFile() {
     const objects = await s3.send(
       new ListObjectsV2Command({
-        Bucket: Resource.MyBucket.name,
+        Bucket: (Resource as any).MyBucket.name,
       }),
     );
 
@@ -74,7 +82,7 @@ export class AppController {
 
     const command = new GetObjectCommand({
       Key: latestFile.Key,
-      Bucket: Resource.MyBucket.name,
+      Bucket: (Resource as any).MyBucket.name,
     });
     const url = await getSignedUrl(s3, command);
 

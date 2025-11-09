@@ -5,8 +5,11 @@ import {
 } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
+import { LoggerService } from './loggers/logger.service';
 
 export function appSetup(app: INestApplication) {
+  app.useLogger(new LoggerService());
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

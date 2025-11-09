@@ -5,9 +5,10 @@ import { IUserRepository } from './user.types';
 import { UsersController } from './users.controller';
 import { AuthModule } from '../auth/auth.module';
 import { CommonModule } from '../common/common.module';
+import { LoggerModule } from '../loggers/logger.module';
 
 @Module({
-  imports: [AuthModule, CommonModule],
+  imports: [AuthModule, CommonModule, LoggerModule],
   controllers: [UsersController],
   providers: [
     UsersService,

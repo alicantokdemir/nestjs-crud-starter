@@ -5,9 +5,10 @@ import { AuthModule } from '../auth/auth.module';
 import { CommonModule } from '../common/common.module';
 import { ThingsController } from './things.controller';
 import { ThingsService } from './things.service';
+import { LoggerModule } from '../loggers/logger.module';
 
 @Module({
-  imports: [AuthModule, CommonModule],
+  imports: [AuthModule, CommonModule, LoggerModule],
   controllers: [ThingsController],
   providers: [
     ThingsService,

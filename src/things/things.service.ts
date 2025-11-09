@@ -11,6 +11,7 @@ import {
 } from '../common/pagination';
 import { ListThingDto } from './dto/list-thing.dto';
 import { UpsertThingDto } from './dto/upsert-thing.dto';
+import { LoggerService } from '../loggers/logger.service';
 
 @Injectable()
 export class ThingsService {
@@ -19,19 +20,32 @@ export class ThingsService {
     private readonly thingRepository: IThingRepository,
     @Inject(ITransactionManager)
     private readonly transactionManager: ITransactionManager,
-  ) {}
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext(ThingsService.name);
+  }
 
   async create(upsertThingDto: UpsertThingDto): Promise<Thing> {
+    this.logger.log(
+      `Creating thing with data: ${JSON.stringify(upsertThingDto)}`,
+    );
+
     const thing = await this.transactionManager.saveInTransaction(async () => {
       return this.thingRepository.create(
         this.mapUpsertThingDtoToThing(upsertThingDto),
       );
     });
 
+    this.logger.log(`Thing created with ID: ${thing.id}`);
+
     return thing;
   }
 
   async update(id: IdType, upsertThingDto: UpsertThingDto): Promise<Thing> {
+    this.logger.log(
+      `Updating thing ID ${id} with data: ${JSON.stringify(upsertThingDto)}`,
+    );
+
     const thing = await this.transactionManager.saveInTransaction(async () => {
       return this.thingRepository.update(
         id,
@@ -39,11 +53,19 @@ export class ThingsService {
       );
     });
 
+    this.logger.log(`Thing updated with ID: ${thing.id}`);
+
     return thing;
   }
 
   async list(listThingDto: ListThingDto): Promise<PaginationResult<Thing>> {
     const { page, itemsPerPage, sortBy, sortOrder, ...filter } = listThingDto;
+
+    this.logger.log(
+      `Listing things with filters: ${JSON.stringify(
+        filter,
+      )}, page: ${page}, itemsPerPage: ${itemsPerPage}, sortBy: ${sortBy}, sortOrder: ${sortOrder}`,
+    );
 
     const validSortFields = ['createdAt', 'updatedAt'];
 
@@ -78,10 +100,12 @@ export class ThingsService {
   }
 
   findOneById(id: IdType): Promise<Thing | null> {
+    this.logger.log(`Finding thing by ID: ${id}`);
     return this.thingRepository.findOneById(id);
   }
 
   remove(id: IdType) {
+    this.logger.log(`Removing thing by ID: ${id}`);
     return this.thingRepository.remove(id);
   }
 

@@ -4,7 +4,8 @@ import { AppModule } from './app.module';
 import { appSetup, swaggerSetup } from './setup';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // Buffering logs to make sure all logs will be buffered until a custom logger is attached
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
 
   const port = process.env.PORT ?? 3000;
 
