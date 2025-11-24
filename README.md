@@ -11,5 +11,8 @@ Please refer to /docs for swagger documentation
 - [x] Containerization / Docker
 - [ ] Deployment script (sst, terraform, pulumi..)
 - [ ] Github workflows
+- [ ] Graceful shutdown
+- [ ] Error handling
 - [ ] Update README file
+
 
