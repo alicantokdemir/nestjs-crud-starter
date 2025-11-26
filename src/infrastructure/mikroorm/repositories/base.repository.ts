@@ -23,7 +23,7 @@ export abstract class BaseRepository<
 
   async create(newObj: DomainEntity): Promise<DomainEntity> {
     const obj = this.em.create(this.dbEntity, newObj);
-    this.em.persistAndFlush(obj);
+    await this.em.persistAndFlush(obj);
 
     return obj.toObject();
   }
@@ -89,7 +89,7 @@ export abstract class BaseRepository<
 
     Object.assign(entity, updateObj);
 
-    this.em.persistAndFlush(entity);
+    await this.em.persistAndFlush(entity);
 
     return entity.toObject();
   }
