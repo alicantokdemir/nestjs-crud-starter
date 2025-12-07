@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { IUserRepository } from './user.types';
 import { User, UserStatus } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ITransactionManager } from '../common/transaction-manager';
 import { LoggerService } from '../loggers/logger.service';
 
 @Injectable()
@@ -10,8 +9,6 @@ export class UsersService {
   constructor(
     @Inject(IUserRepository)
     private readonly userRepository: IUserRepository,
-    @Inject(ITransactionManager)
-    private readonly transactionManager: ITransactionManager,
     private readonly logger: LoggerService,
   ) {
     this.logger.setContext(UsersService.name);
@@ -37,11 +34,9 @@ export class UsersService {
       `Creating user with data: ${JSON.stringify(createUserDto)}`,
     );
 
-    const user = await this.transactionManager.saveInTransaction(async () => {
-      return this.userRepository.create(
-        this.mapCreateUserDtoToUser(createUserDto),
-      );
-    });
+    const user = await this.userRepository.create(
+      this.mapCreateUserDtoToUser(createUserDto),
+    );
 
     this.logger.log(`User created with ID: ${user.id}`);
 

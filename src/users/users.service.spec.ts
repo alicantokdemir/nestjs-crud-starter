@@ -4,19 +4,15 @@ import { User, UserStatus } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { IUserRepository } from './user.types';
 import { ITransactionManager } from '../common/transaction-manager';
+import { mockBaseRepository } from '../../test/mocks/baseRepository';
+import { LoggerService } from '../loggers/logger.service';
+import { mockLoggerService } from '../../test/mocks/loggerService';
 
 describe('UsersService', () => {
   let service: UsersService;
   let mockUserRepository: IUserRepository = {
-    create: jest.fn(),
-    findAllPaginated: jest.fn(),
-    findAllUnpaginated: jest.fn(),
-    findOneById: jest.fn(),
-    findOne: jest.fn(),
+    ...mockBaseRepository,
     findOneByEmail: jest.fn(),
-    update: jest.fn(),
-    remove: jest.fn(),
-    count: jest.fn(),
   };
 
   let mockTransactionManager: ITransactionManager = {
@@ -33,8 +29,8 @@ describe('UsersService', () => {
           useValue: mockUserRepository,
         },
         {
-          provide: ITransactionManager,
-          useValue: mockTransactionManager,
+          provide: LoggerService,
+          useValue: mockLoggerService,
         },
       ],
     }).compile();

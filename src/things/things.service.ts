@@ -18,8 +18,6 @@ export class ThingsService {
   constructor(
     @Inject(IThingRepository)
     private readonly thingRepository: IThingRepository,
-    @Inject(ITransactionManager)
-    private readonly transactionManager: ITransactionManager,
     private readonly logger: LoggerService,
   ) {
     this.logger.setContext(ThingsService.name);
@@ -30,11 +28,9 @@ export class ThingsService {
       `Creating thing with data: ${JSON.stringify(upsertThingDto)}`,
     );
 
-    const thing = await this.transactionManager.saveInTransaction(async () => {
-      return this.thingRepository.create(
-        this.mapUpsertThingDtoToThing(upsertThingDto),
-      );
-    });
+    const thing = await this.thingRepository.create(
+      this.mapUpsertThingDtoToThing(upsertThingDto),
+    );
 
     this.logger.log(`Thing created with ID: ${thing.id}`);
 
@@ -46,12 +42,10 @@ export class ThingsService {
       `Updating thing ID ${id} with data: ${JSON.stringify(upsertThingDto)}`,
     );
 
-    const thing = await this.transactionManager.saveInTransaction(async () => {
-      return this.thingRepository.update(
-        id,
-        this.mapUpsertThingDtoToThing(upsertThingDto),
-      );
-    });
+    const thing = await this.thingRepository.update(
+      id,
+      this.mapUpsertThingDtoToThing(upsertThingDto),
+    );
 
     this.logger.log(`Thing updated with ID: ${thing.id}`);
 

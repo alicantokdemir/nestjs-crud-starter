@@ -2,19 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ThingsService } from './things.service';
 import { IThingRepository } from './things.types';
 import { ITransactionManager } from '../common/transaction-manager';
+import { mockBaseRepository } from '../../test/mocks/baseRepository';
+import { LoggerService } from '../loggers/logger.service';
+import { mockLoggerService } from '../../test/mocks/loggerService';
 
 describe('ThingsService', () => {
   let service: ThingsService;
-  let mockThingRepository: IThingRepository = {
-    create: jest.fn(),
-    findAllPaginated: jest.fn(),
-    findAllUnpaginated: jest.fn(),
-    findOne: jest.fn(),
-    findOneById: jest.fn(),
-    update: jest.fn(),
-    remove: jest.fn(),
-    count: jest.fn(),
-  };
+  let mockThingRepository: IThingRepository = { ...mockBaseRepository };
 
   let mockTransactionManager: ITransactionManager = {
     saveInTransaction: jest.fn(),
@@ -30,8 +24,8 @@ describe('ThingsService', () => {
           useValue: mockThingRepository,
         },
         {
-          provide: ITransactionManager,
-          useValue: mockTransactionManager,
+          provide: LoggerService,
+          useValue: mockLoggerService,
         },
       ],
     }).compile();
