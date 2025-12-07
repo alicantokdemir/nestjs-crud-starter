@@ -5,7 +5,6 @@ import {
   GetObjectCommand,
   ListObjectsV2Command,
 } from '@aws-sdk/client-s3';
-import { Resource } from 'sst';
 import { Express } from 'express';
 import { Upload } from '@aws-sdk/lib-storage';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -14,6 +13,11 @@ import { Post, Redirect, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { ApiKeyAuth } from './auth/auth.decorator';
 import { LoggerService } from './loggers/logger.service';
+import { EntityManager } from '@mikro-orm/sqlite';
+
+type HealthStatus = {
+  status: string;
+};
 
 const s3 = new S3Client({});
 
@@ -22,18 +26,26 @@ export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly loggerService: LoggerService,
+    private readonly em: EntityManager,
   ) {
     this.loggerService.setContext(AppController.name);
   }
 
-  @Get()
-  getHello(): string {
-    this.loggerService.log('Hello endpoint called');
+  @Get('health')
+  async health(): Promise<HealthStatus> {
+    const healthStatus = await this.appService.health();
 
-    return this.appService.getHello();
+    return healthStatus;
   }
 
-  @ApiBearerAuth('api-key-auth')
+  @Get('ready')
+  async ready(): Promise<HealthStatus> {
+    const readyStatus = await this.appService.ready();
+
+    return readyStatus;
+  }
+
+  /* @ApiBearerAuth('api-key-auth')
   @ApiOperation({
     summary: 'Upload a file to S3',
     description:
@@ -87,5 +99,5 @@ export class AppController {
     const url = await getSignedUrl(s3, command);
 
     return { url };
-  }
+  }*/
 }
