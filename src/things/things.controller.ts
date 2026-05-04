@@ -17,6 +17,9 @@ import { ResponseDto } from '../common/response.dto';
 import { ThingProps } from './entities/thing.entity';
 import { ListThingDto } from './dto/list-thing.dto';
 
+import { ApiTags } from '@nestjs/swagger';
+
+@ApiTags('things')
 @Controller('things')
 export class ThingsController {
   constructor(private readonly thingsService: ThingsService) {}

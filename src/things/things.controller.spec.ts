@@ -14,7 +14,7 @@ describe('ThingsController', () => {
   };
 
   let mockTransactionManager: ITransactionManager = {
-    saveInTransaction: jest.fn(),
+    runInTransaction: jest.fn(),
   };
 
   beforeEach(async () => {
