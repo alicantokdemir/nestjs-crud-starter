@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsObject,
+  IsNotEmpty,
   Validate,
   ValidationArguments,
   ValidatorConstraint,
@@ -23,6 +24,7 @@ class IsRecordStringAnyConstraint implements ValidatorConstraintInterface {
 
 export class UpsertThingDto {
   @IsObject()
+  @IsNotEmpty()
   @Validate(IsRecordStringAnyConstraint)
   @ApiProperty({
     example: {
