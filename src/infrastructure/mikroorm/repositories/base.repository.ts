@@ -1,12 +1,12 @@
 import {
   EntityClass,
   EntityData,
-  EntityManager,
   FilterQuery,
   Loaded,
   OrderDefinition,
   RequiredEntityData,
 } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/sqlite';
 import {
   IBaseRepository,
   IdType,
@@ -47,7 +47,8 @@ export abstract class BaseMikroormRepository<
   async create(newObj: DomainEntity): Promise<DomainEntity> {
     const entity = this.em.create(this.dbEntity, this.mapDomainToOrm(newObj));
 
-    await this.em.persistAndFlush(entity);
+    this.em.persist(entity);
+    await this.em.flush();
 
     return this.toDomain(entity);
   }

@@ -1,4 +1,4 @@
-import { PrimaryKey, Property } from '@mikro-orm/core';
+import { PrimaryKey, Property } from '@mikro-orm/decorators/legacy';
 import { IdType } from '../../../common/base.repository';
 import { v4 } from 'uuid';
 

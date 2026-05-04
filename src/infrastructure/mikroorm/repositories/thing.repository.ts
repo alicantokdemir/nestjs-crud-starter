@@ -1,5 +1,6 @@
 import { ThingEntity } from '../entities/thing.entity';
 import { EntityManager, FilterQuery } from '@mikro-orm/sqlite';
+import { EntityData, RequiredEntityData } from '@mikro-orm/core';
 import { Thing } from '../../../things/entities/thing.entity';
 import { Injectable } from '@nestjs/common';
 import { IThingRepository } from '../../../things/things.types';
@@ -15,17 +16,26 @@ export class ThingRepository
   }
 
   protected mapDomainFilterToOrm(
-    filter: Partial<Thing>,
+    filter?: Partial<Thing>,
   ): FilterQuery<ThingEntity> {
     const ormFilter: Partial<ThingEntity> = { ...filter };
 
     return ormFilter;
   }
 
-  protected mapDomainToOrm(thing: Thing): ThingEntity {
-    const entity = new ThingEntity();
-    entity.data = thing.data;
+  protected mapDomainToOrm(thing: Thing): RequiredEntityData<ThingEntity> {
+    return {
+      data: thing.data,
+    } as RequiredEntityData<ThingEntity>;
+  }
 
-    return entity;
+  protected mapDomainUpdateToOrm(update: Partial<Thing>): EntityData<ThingEntity> {
+    const ormUpdate: EntityData<ThingEntity> = {};
+
+    if (update.data !== undefined) {
+      ormUpdate.data = update.data;
+    }
+
+    return ormUpdate;
   }
 }

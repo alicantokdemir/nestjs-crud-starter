@@ -1,4 +1,4 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, Property } from '@mikro-orm/decorators/legacy';
 import { BaseEntity } from './base.entity';
 import { Thing } from '../../../things/entities/thing.entity';
 

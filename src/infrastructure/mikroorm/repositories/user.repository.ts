@@ -1,4 +1,5 @@
 import { EntityManager, FilterQuery } from '@mikro-orm/sqlite';
+import { EntityData, RequiredEntityData } from '@mikro-orm/core';
 import { IUserRepository } from '../../../users/user.types';
 import { Injectable } from '@nestjs/common';
 import { User } from '../../../users/entities/user.entity';
@@ -15,33 +16,55 @@ export class UserRepository
   }
 
   protected mapDomainFilterToOrm(
-    filter: Partial<User>,
+    filter?: Partial<User>,
   ): FilterQuery<UserEntity> {
     const ormFilter: Partial<UserEntity> = {};
 
-    for (const [key, value] of Object.entries(filter)) {
+    for (const [key, value] of Object.entries(filter ?? {})) {
       ormFilter[key] = value;
     }
 
     return ormFilter;
   }
 
-  protected mapDomainToOrm(user: User): UserEntity {
-    const entity = new UserEntity();
-    if (user.id) {
-      entity.id = user.id;
-    }
-    entity.provider = user.provider;
-    entity.providerId = user.providerId;
-    entity.email = user.email;
-    entity.name = user.name;
-    entity.picture = user.picture;
-    entity.status = user.status;
-
-    return entity;
+  protected mapDomainToOrm(user: User): RequiredEntityData<UserEntity> {
+    return {
+      ...(user.id ? { id: user.id } : {}),
+      provider: user.provider,
+      providerId: user.providerId,
+      email: user.email,
+      name: user.name,
+      picture: user.picture,
+      status: user.status,
+    } as RequiredEntityData<UserEntity>;
   }
 
-  async findOneByEmail(email: string): Promise<User> {
+  protected mapDomainUpdateToOrm(update: Partial<User>): EntityData<UserEntity> {
+    const ormUpdate: EntityData<UserEntity> = {};
+
+    if (update.provider !== undefined) {
+      ormUpdate.provider = update.provider;
+    }
+    if (update.providerId !== undefined) {
+      ormUpdate.providerId = update.providerId;
+    }
+    if (update.email !== undefined) {
+      ormUpdate.email = update.email;
+    }
+    if (update.name !== undefined) {
+      ormUpdate.name = update.name;
+    }
+    if (update.picture !== undefined) {
+      ormUpdate.picture = update.picture;
+    }
+    if (update.status !== undefined) {
+      ormUpdate.status = update.status;
+    }
+
+    return ormUpdate;
+  }
+
+  async findOneByEmail(email: string): Promise<User | null> {
     return this.findOne({ email });
   }
 }

@@ -1,4 +1,5 @@
-import { Entity, Enum, Property, types } from '@mikro-orm/core';
+import { Entity, Enum, Property } from '@mikro-orm/decorators/legacy';
+import { types } from '@mikro-orm/core';
 import { BaseEntity } from './base.entity';
 import { User, UserStatus } from '../../../users/entities/user.entity';
 
