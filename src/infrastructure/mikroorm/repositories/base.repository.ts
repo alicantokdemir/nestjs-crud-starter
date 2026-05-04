@@ -1,7 +1,9 @@
 import {
   EntityClass,
+  EntityData,
   EntityManager,
   FilterQuery,
+  Loaded,
   OrderDefinition,
   RequiredEntityData,
 } from '@mikro-orm/core';
@@ -13,7 +15,7 @@ import {
 
 export abstract class BaseMikroormRepository<
   DbEntity extends { id: IdType; toObject: () => DomainEntity },
-  DomainEntity extends RequiredEntityData<DbEntity>,
+  DomainEntity,
 > implements IBaseRepository<DomainEntity>
 {
   protected constructor(
@@ -21,108 +23,126 @@ export abstract class BaseMikroormRepository<
     protected readonly dbEntity: EntityClass<DbEntity>,
   ) {}
 
-  withEm(em: EntityManager) {
-    const repo = Object.create(this);
+  withEm(em: EntityManager): this {
+    const repo = Object.create(Object.getPrototypeOf(this)) as this;
+
+    Object.assign(repo, this);
     repo.em = em;
+
     return repo;
   }
 
-  protected abstract mapDomainFilterToOrm(filter: Partial<DomainEntity>);
+  protected abstract mapDomainFilterToOrm(
+    filter?: Partial<DomainEntity>,
+  ): FilterQuery<DbEntity>;
 
-  protected abstract mapDomainToOrm(entity: DomainEntity): DbEntity;
+  protected abstract mapDomainToOrm(
+    entity: DomainEntity,
+  ): RequiredEntityData<DbEntity>;
+
+  protected abstract mapDomainUpdateToOrm(
+    update: Partial<DomainEntity>,
+  ): EntityData<DbEntity>;
 
   async create(newObj: DomainEntity): Promise<DomainEntity> {
-    const obj = this.em.create(this.dbEntity, this.mapDomainToOrm(newObj));
-    await this.em.persistAndFlush(obj);
+    const entity = this.em.create(this.dbEntity, this.mapDomainToOrm(newObj));
 
-    return obj.toObject();
+    await this.em.persistAndFlush(entity);
+
+    return this.toDomain(entity);
   }
 
   async findAllUnpaginated(
     filter?: Partial<DomainEntity>,
   ): Promise<DomainEntity[]> {
-    const ormFilter = this.mapDomainFilterToOrm(filter);
+    const entities = await this.em.find(
+      this.dbEntity,
+      this.mapDomainFilterToOrm(filter),
+    );
 
-    const entities = await this.em.find(this.dbEntity, ormFilter ?? {});
-
-    return entities.map((entity) => entity.toObject());
+    return entities.map((entity) => this.toDomain(entity));
   }
 
   async findAllPaginated(
     pagination: PaginationOptions,
     filter?: Partial<DomainEntity>,
   ): Promise<DomainEntity[]> {
-    const ormFilter = this.mapDomainFilterToOrm(filter);
+    const entities = await this.em.find(
+      this.dbEntity,
+      this.mapDomainFilterToOrm(filter),
+      {
+        limit: pagination.limit,
+        offset: pagination.offset,
+        orderBy: {
+          [pagination.sortBy]: pagination.sortOrder,
+        } as OrderDefinition<DbEntity>,
+      },
+    );
 
-    const entities = await this.em.find(this.dbEntity, ormFilter ?? {}, {
-      limit: pagination.limit,
-      offset: pagination.offset,
-      orderBy: {
-        [pagination.sortBy]: pagination.sortOrder,
-      } as OrderDefinition<DbEntity>,
-    });
-
-    return entities.map((entity) => entity.toObject());
+    return entities.map((entity) => this.toDomain(entity));
   }
 
   async findOne(filter: Partial<DomainEntity>): Promise<DomainEntity | null> {
-    const ormFilter = this.mapDomainFilterToOrm(filter);
+    if (Object.keys(filter).length === 0) {
+      throw new Error('findOne requires a non-empty filter');
+    }
 
-    const entity = await this.em.findOne(this.dbEntity, ormFilter);
+    const entity = await this.em.findOne(
+      this.dbEntity,
+      this.mapDomainFilterToOrm(filter),
+    );
 
-    return entity?.toObject() ?? null;
+    return entity ? this.toDomain(entity) : null;
   }
 
   async findOneById(id: IdType): Promise<DomainEntity | null> {
-    const entity = await this.em.findOne(this.dbEntity, {
-      id,
-    } as FilterQuery<DbEntity>);
+    const entity = await this.em.findOne(this.dbEntity, this.idFilter(id));
 
-    return entity?.toObject() ?? null;
+    return entity ? this.toDomain(entity) : null;
   }
 
   async update(
     id: IdType,
     updateObj: Partial<DomainEntity>,
   ): Promise<DomainEntity> {
-    const entity = await this.em.findOne(this.dbEntity, {
-      id,
-    } as FilterQuery<DbEntity>);
+    const entity = await this.em.findOne(this.dbEntity, this.idFilter(id));
 
     if (!entity) {
-      throw new Error(`${this.dbEntity.name} not found`);
+      throw new Error(`${this.dbEntity.name} with id ${String(id)} not found`);
     }
 
-    Object.assign(entity, updateObj);
+    Object.assign(entity, this.mapDomainUpdateToOrm(updateObj));
 
-    await this.em.persistAndFlush(entity);
+    await this.em.flush();
 
-    return entity.toObject();
+    return this.toDomain(entity);
   }
 
   async removeAll(filter?: Partial<DomainEntity>): Promise<number> {
-    const ormFilter = this.mapDomainFilterToOrm(filter);
-
-    const deleted = await this.em.nativeDelete(
+    return this.em.nativeDelete(
       this.dbEntity,
-      ormFilter as FilterQuery<DbEntity>,
+      this.mapDomainFilterToOrm(filter),
     );
-
-    return deleted;
   }
 
   async remove(id: IdType): Promise<boolean> {
-    const deleted = await this.em.nativeDelete(this.dbEntity, {
-      id,
-    } as FilterQuery<DbEntity>);
+    const deleted = await this.em.nativeDelete(
+      this.dbEntity,
+      this.idFilter(id),
+    );
 
     return deleted > 0;
   }
 
   async count(filter?: Partial<DomainEntity>): Promise<number> {
-    return this.em.count(
-      this.dbEntity,
-      (filter as FilterQuery<DbEntity>) ?? {},
-    );
+    return this.em.count(this.dbEntity, this.mapDomainFilterToOrm(filter));
+  }
+
+  private toDomain(entity: Loaded<DbEntity> | DbEntity): DomainEntity {
+    return entity.toObject();
+  }
+
+  private idFilter(id: IdType): FilterQuery<DbEntity> {
+    return { id } as FilterQuery<DbEntity>;
   }
 }

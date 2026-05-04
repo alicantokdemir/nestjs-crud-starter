@@ -1,9 +1,6 @@
-import { IBaseRepository } from './base.repository';
-
-export interface ITransactionManager {
-  saveInTransaction<T>(
-    operation: (repoInstances: IBaseRepository<unknown>[]) => Promise<T>,
-    repos: IBaseRepository<unknown>[],
+export interface ITransactionManager<TTransactionContext = unknown> {
+  runInTransaction<T>(
+    operation: (context: TTransactionContext) => Promise<T>,
   ): Promise<T>;
 }
 
