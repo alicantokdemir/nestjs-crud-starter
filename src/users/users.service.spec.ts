@@ -16,7 +16,7 @@ describe('UsersService', () => {
   };
 
   let mockTransactionManager: ITransactionManager = {
-    saveInTransaction: jest.fn(),
+    runInTransaction: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -35,7 +35,7 @@ describe('UsersService', () => {
       ],
     }).compile();
 
-    (mockTransactionManager.saveInTransaction as jest.Mock).mockImplementation(
+    (mockTransactionManager.runInTransaction as jest.Mock).mockImplementation(
       async (cb: any) => cb(),
     );
 

@@ -11,7 +11,7 @@ describe('ThingsService', () => {
   let mockThingRepository: IThingRepository = { ...mockBaseRepository };
 
   let mockTransactionManager: ITransactionManager = {
-    saveInTransaction: jest.fn(),
+    runInTransaction: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -30,7 +30,7 @@ describe('ThingsService', () => {
       ],
     }).compile();
 
-    (mockTransactionManager.saveInTransaction as jest.Mock).mockImplementation(
+    (mockTransactionManager.runInTransaction as jest.Mock).mockImplementation(
       async (cb: any) => cb(),
     );
 
