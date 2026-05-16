@@ -10,16 +10,12 @@ Usage:
 - Push to `main` or run `npm run release` locally after setting `GITHUB_TOKEN` if you want to test the release process.
 
 ### TODOs
-- [ ] Unit & e2e Tests
 - [x] Logging
 - [x] Monitoring
 - [x] Semantic versioning
-- [ ] i18n
 - [x] Containerization / Docker
-- [ ] Deployment script (sst, terraform, pulumi..)
 - [x] Github workflows
 - [x] Graceful shutdown
 - [ ] Error handling
-- [ ] Update README file
-
-
+- [ ] Deployment script (sst, terraform, pulumi..)
+- [ ] Unit & e2e Tests
