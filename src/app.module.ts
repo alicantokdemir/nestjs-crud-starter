@@ -7,6 +7,7 @@ import { CommonModule } from './common/common.module';
 import { ThingsModule } from './things/things.module';
 import { MetricsModule } from './metrics/metrics.module';
 import { LoggerModule } from './loggers/logger.module';
+import { GracefulShutdownService } from './infrastructure/lifecycle/graceful-shutdown.service';
 
 @Module({
   imports: [
@@ -18,6 +19,6 @@ import { LoggerModule } from './loggers/logger.module';
     LoggerModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, GracefulShutdownService],
 })
 export class AppModule {}
