@@ -1,3 +1,9 @@
+## [1.1.0](https://github.com/alicantokdemir/nestjs-crud-starter/compare/v1.0.0...v1.1.0) (2026-05-16)
+
+### Features
+
+* **graceful-shutdown:** graceful shutdown service ([fdf470f](https://github.com/alicantokdemir/nestjs-crud-starter/commit/fdf470f31b98573337395dc877a46b98564c09b2))
+
 ## 1.0.0 (2026-05-04)
 
 ### Features

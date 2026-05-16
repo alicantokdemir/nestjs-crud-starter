@@ -1,6 +1,6 @@
 {
   "name": "nestjs-crud-starter",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Nestjs Starter Template for CRUD + MikroORM",
   "author": "Alican Tokdemir <github.com/alicantokdemir>",
   "private": true,
