@@ -18,7 +18,7 @@ Usage:
 - [x] Containerization / Docker
 - [ ] Deployment script (sst, terraform, pulumi..)
 - [x] Github workflows
-- [ ] Graceful shutdown
+- [x] Graceful shutdown
 - [ ] Error handling
 - [ ] Update README file
 
